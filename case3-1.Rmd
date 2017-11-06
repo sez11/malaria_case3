@@ -51,21 +51,12 @@ summary(glm(missing~ Y+ AGE + GREEN+ as.factor(PHC), data=gambia ))
 ```
 
 #EDA
-(Top Right) Here we visualize the percent of people with malaria based on the different greenery in the surrounding village. We see the percent of people with the disease varies with the amount of greenery. The relationship between the greenery and people sick is not a strictly positive or negative correlation because the percent of sick both increases and decreases as greenery increases. This is somewhat surprising as mosquitoes (which transmit the disease to humans) are likely to live in places with greenery; however, this graphic does not suggest the more greenery the higher the percent of children with malaria. 
-
-(Top Left) Here we visualize the percent of people with and without malaria based across different ages. As age increases the percent of people in the age bracket sick increases. 
-
-(Bottom Right) Here we visualize the percent of people with and without malaria based on the presence of a clinic in the village. A higher percent of people are sick in villages without a clinic compared to those sick in a village with a clinic. This makes sense that the presence of malaria is smaller where there are clinics because this means children have access to medicine. Additionally, it is possible the clinics probably help educate and spread awareness about prevention therefore decreasing the presence of malaria.   
-
-(Bottom Left) Here we visualize the percent of people with and without malaria based on use of bednets. Of the child who do not have bednets there is not a significantly higher percent of children sick than those who used bed nets. This is surprising because bednets are a means of prevention and are recommended by agencies such as the CDC (https://www.cdc.gov/malaria/malaria_worldwide/reduction/itn.html). The data suggests, however, there is not much difference between the percent of people sick with and without bed use.     
-
 ```{r}
 #Univariate Analysis
 
-#bivariate analyses is largely covered by sarah, univariate analysis primarily needed
 qplot(gambia$GREEN, geom = "histogram", main = "Histogram of Village Greenery", xlab = "Greenery Level", ylab = "Frequency", fill=I("blue"), binwidth = 0.5)
 #overwhelming amount of data for villages with 40 value greenery levels. Very little data (could do percentage of total observations plot) for the below 40 or above 45 value greenery level villages
-unique(gambia$GREEN)#only 5 unique values
+unique(gambia$GREEN)#only 5 unique values of greenery level
 
 
 qplot(gambia$PHC, geom = "histogram", main = "Histogram of Villages with Public Health Clinic", xlab = "Public Clinic Present", ylab = "Frequency", fill=I("blue"), binwidth = 0.5) #528 observations with a Public Clinic(65.6%) in the village, 277 without (34.4%)
@@ -73,7 +64,7 @@ qplot(gambia$PHC, geom = "histogram", main = "Histogram of Villages with Public 
 qplot(gambia$AGE, geom = "histogram", main = "Histogram of Child Age", xlab = "Child's Age", ylab = "Frequency", fill=I("blue"), binwidth = 0.5) #fairly even distribution for age of the child, with [29.6%, 23.4%, 24.7%, 22.4%] distribution of ages 
 #could look into adding percentage of observations into the ggplot
 
-qplot(gambia$BEDNET, geom = "histogram", main = "Histogram of Complete Cases of Bednet Use", xlab = "Bednet Presence", ylab = "Frequency", fill=I("blue"), binwidth = 0.5) 
+qplot(gambia$BEDNET, geom = "histogram", main = "Histogram of Bednet Use(Complete Cases)", xlab = "Bednet Presence", ylab = "Frequency", fill=I("blue"), binwidth = 0.5) 
 #317 missing cases of Bednet use, 70.5% use a Bednet for complete cases while 29.5%
 
 ```
@@ -105,7 +96,13 @@ p2<-ggplot(data = x, aes(x=GREEN,fill=Malaria))+geom_histogram(position="fill", 
 grid.arrange(p2, p3, p4,p5, ncol=2, nrow=2)
 #EDA, MCAR v MAR, proposal for inference
 ```
+(Top Right) Here we visualize the percent of people with malaria based on the different greenery in the surrounding village. We see the percent of people with the disease varies with the amount of greenery. The relationship between the greenery and people sick is not a strictly positive or negative correlation because the percent of sick both increases and decreases as greenery increases. This is somewhat surprising as mosquitoes (which transmit the disease to humans) are likely to live in places with greenery; however, this graphic does not suggest the more greenery the higher the percent of children with malaria. 
 
+(Top Left) Here we visualize the percent of people with and without malaria based across different ages. As age increases the percent of people in the age bracket sick increases. 
+
+(Bottom Right) Here we visualize the percent of people with and without malaria based on the presence of a clinic in the village. A higher percent of people are sick in villages without a clinic compared to those sick in a village with a clinic. This makes sense that the presence of malaria is smaller where there are clinics because this means children have access to medicine. Additionally, it is possible the clinics probably help educate and spread awareness about prevention therefore decreasing the presence of malaria.   
+
+(Bottom Left) Here we visualize the percent of people with and without malaria based on use of bednets. Of the child who do not have bednets there is not a significantly higher percent of children sick than those who used bed nets. This is surprising because bednets are a means of prevention and are recommended by agencies such as the CDC (https://www.cdc.gov/malaria/malaria_worldwide/reduction/itn.html). The data suggests, however, there is not much difference between the percent of people sick with and without bed use.
 
 #Credit
 
