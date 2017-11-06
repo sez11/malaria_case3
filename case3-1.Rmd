@@ -1,0 +1,84 @@
+---
+title: "Case 3-1 Stat 440"
+author: "Sarah Zimmermann, Adam Wood, Wuming Zhang"
+date: "November 2, 2017"
+output: pdf_document
+---
+
+#Introduction 
+
+The data are from a study malaria presence in Gambia. Each observation corresponds to one child who has been tested for the presence of malaria. We are interested in the factors predictive of the malaria parasits found in the blood for n=805 children. The goal of the analysis is to perform inferences on the impact of age, presence of bednet, presence of clinic, and amount of surrounding greenry on a child having malaria, where greenery is a measure of how much vegetation is around the child's village based on satellite village. A summary of the variables is found below: 
+
+
+Variable Name | Short Description | Type  
+------------- | ------------- | --------------
+Y|indicator of whether malaria parasites were found in the blood of the child|binary
+AGE| age of child in years| continuous 
+BEDNET| indicator of whether the child has a benet over his or her bed| binary 
+GREEN| a measure of how much greenery is around the child's village, derived from satellite images| continuous 
+PHC| indicator for the presence of a public health clinic in the child's village| binary
+
+
+
+#Data
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message=FALSE)
+
+library(ggplot2)
+library(devtools)
+library(ggplot2)
+library(survival)
+library(gridExtra)
+library(scales)
+
+gambia= read.csv("gambiaMissing.csv") 
+dim(gambia)
+```
+
+#Imputation
+```{r}
+#variable summaries 
+#apply(gambia, 2, function(x) summary(as.factor(x)))
+
+
+#missmech for MCAR assumption
+
+#MAR
+gambia$missing= ifelse(is.na(gambia$BEDNET), 1, 0)
+summary(glm(missing~ Y+ AGE + GREEN+ as.factor(PHC), data=gambia ))
+
+#Impute 
+```
+
+#EDA
+```{r}
+x= gambia[complete.cases(gambia), ]
+
+x$Malaria[x$Y==1]= "Yes"
+x$Malaria[x$Y==0]= "No"
+
+x$Clinic[x$PHC==1]= "Yes"
+x$Clinic[x$PHC==0]= "No"
+
+x$Bednet[x$BEDNET==1]= "Yes"
+x$Clinic[x$BEDNET==0]= "No"
+
+
+p5<-ggplot(data = x, aes(x=BEDNET,fill=Malaria))+geom_bar(position="fill") +theme_bw()+ labs(x="Bednet",y="Percentage",fill="Presence of Malaira",title ="% of Ppl w/ Malaria by Bednet") + theme(plot.title = element_text(size=12, hjust = 0.5))+scale_y_continuous(labels=percent_format())
+
+
+p4<-ggplot(data = x, aes(x=PHC,fill=Malaria))+geom_bar(position="fill") +theme_bw()+ labs(x="Clinic Present",y="Percentage",fill="Presence of Malaria",title ="% of Ppl w/ Malaria by Clinic Present") + theme(plot.title = element_text(size=12, hjust = 0.5))+scale_y_continuous(labels=percent_format())
+
+p3<-ggplot(data = x, aes(x=AGE,fill=Malaria))+geom_histogram(position="fill", binwidth = .5) +theme_bw()+ labs(x="Age",y="Frequency",fill="Presence of Malaria",title ="Freq of Ppl w/ Malaria by Age") + theme(plot.title = element_text(size=12, hjust = 0.5))+scale_y_continuous(labels=percent_format())
+
+
+p2<-ggplot(data = x, aes(x=GREEN,fill=Malaria))+geom_histogram(position="fill", binwidth = .5) +theme_bw()+ labs(x="Greenery",y="Frequency",fill="Presence of Malaria",title ="Freq of Ppl w/ Malaria by Greenery") + theme(plot.title = element_text(size=12, hjust = 0.5))+scale_y_continuous(labels=percent_format())
+
+
+grid.arrange(p2, p3, p4,p5, ncol=2, nrow=2)
+```
+
+
+#References
+http://www.stat.columbia.edu/~gelman/arm/missing.pdf
+
