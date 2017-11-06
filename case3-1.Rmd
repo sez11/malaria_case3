@@ -51,6 +51,14 @@ summary(glm(missing~ Y+ AGE + GREEN+ as.factor(PHC), data=gambia ))
 ```
 
 #EDA
+(Top Right) Here we visualize the percent of people with malaria based on the different greenery in the surrounding village. We see the percent of people with the disease varies with the amount of greenery. The relationship between the greenery and people sick is not a strictly positive or negative correlation because the percent of sick both increases and decreases as greenery increases. This is somewhat surprising as mosquitoes (which transmit the disease to humans) are likely to live in places with greenery; however, this graphic does not suggest the more greenery the higher the percent of children with malaria. 
+
+(Top Left) Here we visualize the percent of people with and without malaria based across different ages. As age increases the percent of people in the age bracket sick increases. 
+
+(Bottom Right) Here we visualize the percent of people with and without malaria based on the presence of a clinic in the village. A higher percent of people are sick in villages without a clinic compared to those sick in a village with a clinic. This makes sense that the presence of malaria is smaller where there are clinics because this means children have access to medicine. Additionally, it is possible the clinics probably help educate and spread awareness about prevention therefore decreasing the presence of malaria.   
+
+(Bottom Left) Here we visualize the percent of people with and without malaria based on use of bednets. Of the child who do not have bednets there is not a significantly higher percent of children sick than those who used bed nets. This is surprising because bednets are a means of prevention and are recommended by agencies such as the CDC (https://www.cdc.gov/malaria/malaria_worldwide/reduction/itn.html). The data suggests, however, there is not much difference between the percent of people sick with and without bed use.     
+
 ```{r}
 #Univariate Analysis
 
@@ -88,16 +96,20 @@ p5<-ggplot(data = x, aes(x=BEDNET,fill=Malaria))+geom_bar(position="fill") +them
 
 p4<-ggplot(data = x, aes(x=PHC,fill=Malaria))+geom_bar(position="fill") +theme_bw()+ labs(x="Clinic Present",y="Percentage",fill="Presence of Malaria",title ="% of Ppl w/ Malaria by Clinic Present") + theme(plot.title = element_text(size=12, hjust = 0.5))+scale_y_continuous(labels=percent_format())
 
-p3<-ggplot(data = x, aes(x=AGE,fill=Malaria))+geom_histogram(position="fill", binwidth = .5) +theme_bw()+ labs(x="Age",y="Frequency",fill="Presence of Malaria",title ="Freq of Ppl w/ Malaria by Age") + theme(plot.title = element_text(size=12, hjust = 0.5))+scale_y_continuous(labels=percent_format())
+p3<-ggplot(data = x, aes(x=AGE,fill=Malaria))+geom_histogram(position="fill", binwidth = .5) +theme_bw()+ labs(x="Age",y="Frequency",fill="Presence of Malaria",title ="% of Ppl w/ Malaria by Age") + theme(plot.title = element_text(size=12, hjust = 0.5))+scale_y_continuous(labels=percent_format())
 
 
-p2<-ggplot(data = x, aes(x=GREEN,fill=Malaria))+geom_histogram(position="fill", binwidth = .5) +theme_bw()+ labs(x="Greenery",y="Frequency",fill="Presence of Malaria",title ="Freq of Ppl w/ Malaria by Greenery") + theme(plot.title = element_text(size=12, hjust = 0.5))+scale_y_continuous(labels=percent_format())
+p2<-ggplot(data = x, aes(x=GREEN,fill=Malaria))+geom_histogram(position="fill", binwidth = .5) +theme_bw()+ labs(x="Greenery",y="Frequency",fill="Presence of Malaria",title ="% of Ppl w/ Malaria by Greenery") + theme(plot.title = element_text(size=12, hjust = 0.5))+scale_y_continuous(labels=percent_format())
 
 
 grid.arrange(p2, p3, p4,p5, ncol=2, nrow=2)
 #EDA, MCAR v MAR, proposal for inference
 ```
 
+
+#Credit
+
+Sarah wrote the introduction and created/analyzed bivariate graphs. 
 
 #References
 http://www.stat.columbia.edu/~gelman/arm/missing.pdf
