@@ -14,7 +14,7 @@ Variable Name | Short Description | Type
 ------------- | ------------- | --------------
 Y|indicator of whether malaria parasites were found in the blood of the child|binary
 AGE| age of child in years| continuous 
-BEDNET| indicator of whether the child has a benet over his or her bed| binary 
+BEDNET| indicator of whether the child has a bednet over his or her bed| binary 
 GREEN| a measure of how much greenery is around the child's village, derived from satellite images| continuous 
 PHC| indicator for the presence of a public health clinic in the child's village| binary
 
@@ -52,6 +52,25 @@ summary(glm(missing~ Y+ AGE + GREEN+ as.factor(PHC), data=gambia ))
 
 #EDA
 ```{r}
+#Univariate Analysis
+
+#bivariate analyses is largely covered by sarah, univariate analysis primarily needed
+qplot(gambia$GREEN, geom = "histogram", main = "Histogram of Village Greenery", xlab = "Greenery Level", ylab = "Frequency", fill=I("blue"), binwidth = 0.5)
+#overwhelming amount of data for villages with 40 value greenery levels. Very little data (could do percentage of total observations plot) for the below 40 or above 45 value greenery level villages
+unique(gambia$GREEN)#only 5 unique values
+
+
+qplot(gambia$PHC, geom = "histogram", main = "Histogram of Villages with Public Health Clinic", xlab = "Public Clinic Present", ylab = "Frequency", fill=I("blue"), binwidth = 0.5) #528 observations with a Public Clinic(65.6%) in the village, 277 without (34.4%)
+
+qplot(gambia$AGE, geom = "histogram", main = "Histogram of Child Age", xlab = "Child's Age", ylab = "Frequency", fill=I("blue"), binwidth = 0.5) #fairly even distribution for age of the child, with [29.6%, 23.4%, 24.7%, 22.4%] distribution of ages 
+#could look into adding percentage of observations into the ggplot
+
+qplot(gambia$BEDNET, geom = "histogram", main = "Histogram of Complete Cases of Bednet Use", xlab = "Bednet Presence", ylab = "Frequency", fill=I("blue"), binwidth = 0.5) 
+#317 missing cases of Bednet use, 70.5% use a Bednet for complete cases while 29.5%
+
+```
+
+```{r}
 x= gambia[complete.cases(gambia), ]
 
 x$Malaria[x$Y==1]= "Yes"
@@ -76,6 +95,7 @@ p2<-ggplot(data = x, aes(x=GREEN,fill=Malaria))+geom_histogram(position="fill", 
 
 
 grid.arrange(p2, p3, p4,p5, ncol=2, nrow=2)
+#EDA, MCAR v MAR, proposal for inference
 ```
 
 
