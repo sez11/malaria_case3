@@ -59,9 +59,11 @@ qplot(gambia$GREEN, geom = "histogram", main = "Histogram of Village Greenery", 
 unique(gambia$GREEN)#only 5 unique values of greenery level
 
 
-qplot(gambia$PHC, geom = "histogram", main = "Histogram of Villages with Public Health Clinic", xlab = "Public Clinic Present", ylab = "Frequency", fill=I("blue"), binwidth = 0.5) #528 observations with a Public Clinic(65.6%) in the village, 277 without (34.4%)
+qplot(gambia$PHC, geom = "histogram", main = "Histogram of Villages with Public Health Clinic", xlab = "Public Clinic Present", ylab = "Frequency", fill=I("blue"), binwidth = 0.5) 
+#528 observations with a Public Clinic(65.6%) in the village, 277 without (34.4%)
 
-qplot(gambia$AGE, geom = "histogram", main = "Histogram of Child Age", xlab = "Child's Age", ylab = "Frequency", fill=I("blue"), binwidth = 0.5) #fairly even distribution for age of the child, with [29.6%, 23.4%, 24.7%, 22.4%] distribution of ages 
+qplot(gambia$AGE, geom = "histogram", main = "Histogram of Child Age", xlab = "Child's Age", ylab = "Frequency", fill=I("blue"), binwidth = 0.5) 
+#fairly even distribution for age of the child, with [29.6%, 23.4%, 24.7%, 22.4%] distribution of ages 
 #could look into adding percentage of observations into the ggplot
 
 qplot(gambia$BEDNET, geom = "histogram", main = "Histogram of Bednet Use(Complete Cases)", xlab = "Bednet Presence", ylab = "Frequency", fill=I("blue"), binwidth = 0.5) 
@@ -69,9 +71,10 @@ qplot(gambia$BEDNET, geom = "histogram", main = "Histogram of Bednet Use(Complet
 
 ```
 
+
 ```{r}
 x= gambia[complete.cases(gambia), ]
-
+ 
 x$Malaria[x$Y==1]= "Yes"
 x$Malaria[x$Y==0]= "No"
 
