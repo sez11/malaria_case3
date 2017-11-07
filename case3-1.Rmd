@@ -61,7 +61,7 @@ The histogram of village greenery illustrates that the majority of observations 
 
 The distribution of the $PHC$ variable indicates that 528 observations (65.6%) have a Public Clinic in the village, while 277 observations are without a clinic (34.4%). The age of the children in this study is relatively evenly distributed, with ages 1 to 4 having a distribution of observations of [29.6%, 23.4%, 24.7%, 22.4%] respectively. An unevenly distributed age variable may lead to concerns about age bias in our conclusions, but even distribution of the variable means that each age will be appropriately represented. 
 
-The bednet use variable has 317 missing cases, which will have to be handled in our analysis. Of the complete bednet cases in the data set, 70.5% use a Bednet for complete while 29.5% do not. Bivariate analyses will provide more information about the relationships between these four variables and malaria presence. 
+The bednet use variable has 317 missing cases, which will have to be handled in our analysis. Of the complete bednet cases in the data set, 70.5% use a Bednet while 29.5% do not. Bivariate analyses will provide more information about the relationships between these four variables and malaria presence. 
 
 
 ##Bivariate Analysis
