@@ -57,7 +57,7 @@ pc4 = qplot(gambia$BEDNET, geom = "histogram", main = "Histogram of Bednet Use(C
 
 grid.arrange(pc1, pc2, pc3, pc4, ncol=2, nrow=2)
 ```
-The histogram of village greenery illustrates that the majority of observations (72.8%) were in villages with a greenery value of 40.85. There is a relatively even representation amongst the other unique values of greenery, with greenery values of 28.85, 33.65, 40.10 and 47.65 recieving 3.4%, 10.4%, 8.6%, and 4.2% of observations, respectively. 
+The histogram of village greenery illustrates that the majority of observations (72.8%) were in villages with a greenery value of 40.85. There is a relatively even representation amongst the other unique values of greenery, with greenery values of 28.85, 33.65, 40.10 and 47.65 recieving 3.4%, 10.4%, 8.6%, and 4.2% of observations, respectively. Conclusions and estimates of malaria presence in villages with greenery value other than 40.85 will have to carefully constructed. A heavily uneven distribution of this variable will make estimates about malaria presence in greeneries of values other than 40.85 tricky, and given the small volume of observations in the other unique values of greenery, high in uncertainty.
 
 The distribution of the $PHC$ variable indicates that 528 observations (65.6%) have a Public Clinic in the village, while 277 observations are without a clinic (34.4%). The age of the children in this study is relatively evenly distributed, with ages 1 to 4 having a distribution of observations of [29.6%, 23.4%, 24.7%, 22.4%] respectively. An unevenly distributed age variable may lead to concerns about age bias in our conclusions, but even distribution of the variable means that each age will be appropriately represented. 
 
