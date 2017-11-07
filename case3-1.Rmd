@@ -36,27 +36,35 @@ dim(gambia)
 ```
 
 #EDA
+
+##Univariate Analysis
 ```{r}
 #Univariate Analysis
 
-qplot(gambia$GREEN, geom = "histogram", main = "Histogram of Village Greenery", xlab = "Greenery Level", ylab = "Frequency", fill=I("blue"), binwidth = 0.5)
+pc1 = qplot(gambia$GREEN, geom = "histogram", main = "Histogram of Village Greenery", xlab = "Greenery Level", ylab = "Frequency", fill=I("blue"), binwidth = 0.5)
 #overwhelming amount of data for villages with 40 value greenery levels. Very little data (could do percentage of total observations plot) for the below 40 or above 45 value greenery level villages
-unique(gambia$GREEN)#only 5 unique values of greenery level
 
 
-qplot(gambia$PHC, geom = "histogram", main = "Histogram of Villages with Public Health Clinic", xlab = "Public Clinic Present", ylab = "Frequency", fill=I("blue"), binwidth = 0.5) 
+pc2 = qplot(gambia$PHC, geom = "histogram", main = "Histogram of Villages with Public Health Clinic", xlab = "Public Clinic Present", ylab = "Frequency", fill=I("blue"), binwidth = 0.5) 
 #528 observations with a Public Clinic(65.6%) in the village, 277 without (34.4%)
 
-qplot(gambia$AGE, geom = "histogram", main = "Histogram of Child Age", xlab = "Child's Age", ylab = "Frequency", fill=I("blue"), binwidth = 0.5) 
+pc3 = qplot(gambia$AGE, geom = "histogram", main = "Histogram of Child Age", xlab = "Child's Age", ylab = "Frequency", fill=I("blue"), binwidth = 0.5) 
 #fairly even distribution for age of the child, with [29.6%, 23.4%, 24.7%, 22.4%] distribution of ages 
 #could look into adding percentage of observations into the ggplot
 
-qplot(gambia$BEDNET, geom = "histogram", main = "Histogram of Bednet Use(Complete Cases)", xlab = "Bednet Presence", ylab = "Frequency", fill=I("blue"), binwidth = 0.5) 
+pc4 = qplot(gambia$BEDNET, geom = "histogram", main = "Histogram of Bednet Use(Complete Cases)", xlab = "Bednet Presence", ylab = "Frequency", fill=I("blue"), binwidth = 0.5) 
 #317 missing cases of Bednet use, 70.5% use a Bednet for complete cases while 29.5%
 
+grid.arrange(pc1, pc2, pc3, pc4, ncol=2, nrow=2)
 ```
+The histogram of village greenery illustrates that the majority of observations (72.8%) were in villages with a greenery value of 40.85. There is a relatively even representation amongst the other unique values of greenery, with greenery values of 28.85, 33.65, 40.10 and 47.65 recieving 3.4%, 10.4%, 8.6%, and 4.2% of observations, respectively. 
+
+The distribution of the $PHC$ variable indicates that 528 observations (65.6%) have a Public Clinic in the village, while 277 observations are without a clinic (34.4%). The age of the children in this study is relatively evenly distributed, with ages 1 to 4 having a distribution of observations of [29.6%, 23.4%, 24.7%, 22.4%] respectively. An unevenly distributed age variable may lead to concerns about age bias in our conclusions, but even distribution of the variable means that each age will be appropriately represented. 
+
+The bednet use variable has 317 missing cases, which will have to be handled in our analysis. Of the complete bednet cases in the data set, 70.5% use a Bednet for complete while 29.5% do not. Bivariate analyses will provide more information about the relationships between these four variables and malaria presence. 
 
 
+##Bivariate Analysis
 ```{r}
 x= gambia[complete.cases(gambia), ]
  
@@ -82,7 +90,6 @@ p2<-ggplot(data = x, aes(x=GREEN,fill=Malaria))+geom_histogram(position="fill", 
 
 
 grid.arrange(p2, p3, p4,p5, ncol=2, nrow=2)
-#EDA, MCAR v MAR, proposal for inference
 ```
 (Top Right) Here we visualize the percent of people with malaria based on the different greenery in the surrounding village. We see the percent of people with the disease varies with the amount of greenery. The relationship between the greenery and people sick is not a strictly positive or negative correlation because the percent of sick both increases and decreases as greenery increases. This is somewhat surprising as mosquitoes (which transmit the disease to humans) are likely to live in places with greenery; however, this graphic does not suggest the more greenery the higher the percent of children with malaria. 
 
