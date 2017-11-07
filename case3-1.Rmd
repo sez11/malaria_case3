@@ -35,21 +35,6 @@ gambia= read.csv("gambiaMissing.csv")
 dim(gambia)
 ```
 
-#Imputation
-```{r}
-#variable summaries 
-#apply(gambia, 2, function(x) summary(as.factor(x)))
-
-
-#missmech for MCAR assumption
-
-#MAR
-gambia$missing= ifelse(is.na(gambia$BEDNET), 1, 0)
-summary(glm(missing~ Y+ AGE + GREEN+ as.factor(PHC), data=gambia ))
-
-#Impute 
-```
-
 #EDA
 ```{r}
 #Univariate Analysis
@@ -105,7 +90,34 @@ grid.arrange(p2, p3, p4,p5, ncol=2, nrow=2)
 
 (Bottom Right) Here we visualize the percent of people with and without malaria based on the presence of a clinic in the village. A higher percent of people are sick in villages without a clinic compared to those sick in a village with a clinic. This makes sense that the presence of malaria is smaller where there are clinics because this means children have access to medicine. Additionally, it is possible the clinics probably help educate and spread awareness about prevention therefore decreasing the presence of malaria.   
 
+
 (Bottom Left) Here we visualize the percent of people with and without malaria based on use of bednets. Of the child who do not have bednets there is not a significantly higher percent of children sick than those who used bed nets. This is surprising because bednets are a means of prevention and are recommended by agencies such as the CDC (https://www.cdc.gov/malaria/malaria_worldwide/reduction/itn.html). The data suggests, however, there is not much difference between the percent of people sick with and without bed use.
+=======
+# Approaches Outline
+## Missing Data Mechanisms
+From initial exploration, we observe that we are missing 39.38% data for the explanatory variable BEDNET among all observations. We first suspect that this might simply be some random data collection issue. For instance, it could be that it is generally hard to collect data for people and missing data would occur very randomly; that is, the missing completely at random (MCAR) assumption. However, it is a bit suspicious that we have no missing data for any other explanatory variable in the dataset. Therefore, another possibility is that, it is harder to collect the BEDNET data for certain group of the people in this study than the others; in another word, the missing at random (MAR) assumption. 
+
+To further explore whether certain groups are more likely to have missing value, we perform a logistic regression with missing value as th reponse variable and all other variables in the original dataset as the explanatory variables. We observe from the results below that, the coefficients for AGE and PHC variables are statistically significant. This means that whether missing data would occur has some correlation with some variables in the dataset. Therefore, we can reject the MCAR assumption and assume that only MAR assumption holds.
+```{r}
+#variable summaries 
+#apply(gambia, 2, function(x) summary(as.factor(x)))
+
+
+#missmech for MCAR assumption
+
+#MAR
+gambia$missing= ifelse(is.na(gambia$BEDNET), 1, 0)
+summary(glm(missing~ Y+ AGE + GREEN+ as.factor(PHC), data=gambia ))
+
+#Impute 
+```
+
+## Method proposal
+A naive way of dealing with missing data is to perform listwise deletion, that is, to delete the entire observation if a missing data occurs. Although this method is very easy to implement, it would potentially reduce the statistical power of our analysis since we would need to reduce the size of the dataset by almost half. Additionaly, since the MCAR assumption does not hold, our estimates would be biased using this method. 
+
+In order to obtain unbaised estimates while properly using the MAR assumption, we plan to use the multiple imputation method. This method contains three main steps. First, we impute the missing values for $m$ times using an appropriate model. Second, we perform our desired analysis on each of the $m$ datasets. Last, we combine the $m$ analysis into one final result using some proper method. 
+Note that the multiple imputation method would bring us more variability thus improving the accuracy of our estimates. However, the implementation of this method could be much more challenging and we need to be very careful when choosing models. 
+
 
 #Credit
 
