@@ -127,7 +127,7 @@ Note that the multiple imputation method would bring us more variability thus im
 
 #Credit
 
-Sarah wrote the introduction and created/analyzed bivariate graphs. Wuming wrote about missing data mechanisms and method proposal. 
+This was a team effort. Sarah wrote the introduction and created/analyzed bivariate graphs. Wuming wrote about missing data mechanisms and method proposal. Adam conducted univariate analysis and univariate write up, as well as some minor edits to the paper.
 
 #References
 http://www.stat.columbia.edu/~gelman/arm/missing.pdf
