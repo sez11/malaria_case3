@@ -1,0 +1,48 @@
+---
+title: "case3-2"
+author: "Sarah Zimmermann, Wuming Zhang, Adam Wood"
+date: "November 9, 2017"
+output: pdf_document
+---
+
+
+#Data
+```{r}
+
+library(ggplot2)
+library(devtools)
+library(mice)
+library(lattice)
+gambia= read.csv("gambiaMissing.csv") 
+dim(gambia)
+```
+
+#Multiple Imputation/Chained Regression
+```{r}
+
+tempData <- mice(gambia, m=5,maxit=50,meth='pmm',seed=500)
+summary(tempData)
+
+completedData <- complete(tempData,1)
+
+xyplot(tempData,Y ~ BEDNET+ AGE+ PHC+ GREEN,pch=18,cex=1)
+
+densityplot(tempData)
+
+stripplot(tempData, pch=20, cex=1.2)
+
+modelFit1 <- with(tempData,glm(Y~ BEDNET+AGE+PHC+GREEN))
+summary(pool(modelFit1))
+
+tempData2 <- mice(gambia,m=50,seed=245435)
+modelFit2 <- with(tempData2,lm(Y~BEDNET+AGE+PHC+GREEN))
+summary(pool(modelFit2))
+```
+
+#Credits 
+
+
+
+#References 
+
+https://www.r-bloggers.com/imputing-missing-data-with-r-mice-package/
