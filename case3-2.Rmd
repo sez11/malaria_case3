@@ -6,41 +6,33 @@ output: pdf_document
 ---
 
 #Data
-```{r}
-
+```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
 library(ggplot2)
 library(devtools)
 library(mice)
 library(lattice)
 gambia= read.csv("gambiaMissing.csv") 
-#gambia$log.green = log(gambia$GREEN)
-# may need log transformation for GREEN
-dim(gambia)
 ```
 
 #Multiple Imputation/Chained Regression
-```{r}
-tempData <- mice(gambia, m=5,maxit=50,meth='pmm',seed=500)
-#gambia$BEDNET = as.factor(gambia$BEDNET)
-#tempData <- mice(gambia, m=5,maxit=50,meth='logreg',seed=500)
-# should probably use logreg since the variable is binary?
+```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
+gambia$BEDNET = as.factor(gambia$BEDNET)
+tempData <- mice(gambia, m=5,maxit=50,meth='logreg',seed=500)
 summary(tempData)
-#where m is the number of imputed data sets, pmm is the method(in this case predictive mean matching)
-
 completedData <- complete(tempData,1)
 #this function returns the imputed data set, with the second parameter in the function determining which data set you are returning(the 1st of the 5 imputed data sets in this case)
 ```
 The multiple imputation method using chained regression was utilized to impute missing data for the bednet variable in the *gambia* data set. The $mice$ package provides several functions for easy implementation of multiple imputation. Functions **mice()**, **complete()**, and **with()** allow us to apply multiple imputation for missing data, replace missing data with imputed data, and use the imputed data set to create a model, respectively. 
 
 ##Inspection of Missing Data
-```{r}
+```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
 xyplot(tempData,Y ~ BEDNET + AGE+ PHC+ GREEN,pch=18,cex=1)
 #unfortunately provides little information when comparing imputed to observed
 
 stripplot(tempData, pch=20, cex=1.2)
 #would be a useful plot for largely continuous data without so many binary or ordinal variables (both Y, PHC and Bednet are binary, and Age and Green only have 4 unique values each)
 
-densityplot(tempData)
+#densityplot(tempData)
 #the densities for each imputed data set follow a similar shape to the observed density curve
 ```
 
@@ -50,14 +42,14 @@ In our density plot, the 5 magenta density curves represent the 5 imputed data s
 
 
 #Model
-```{r}
+```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
 modelFit1 <- with(tempData,glm(Y~ BEDNET+AGE+PHC+GREEN))
 summary(pool(modelFit1))
 #takes the imputed data sets, fits a model to each data set, and pools together results
 
 tempData2 <- mice(gambia,m=50,seed=245435)
 
-densityplot(tempData2)
+#densityplot(tempData2)
 
 modelFit2 <- with(tempData2,glm(Y~BEDNET+AGE+PHC+GREEN))
 summary(pool(modelFit2))
@@ -69,19 +61,33 @@ The summary of our model fit with 50 imputed data sets indicates that the variab
 
 
 #Model Diagnostics
-```{r}
 
+## Interaction Analysis
 
+Since Malaria is a mosquito-borne disease and we suspect that the presence of bed net would be an influential factor. Some other factor, such as the presence of a public clinic, could potentially have some interaction with the bed net variable. In another word, the effect of public clinic to Malaria appearance could possibly vary with whether the bed net is used. We picked one of the imputed dataset and fit a logistic regression model with an interaction term of the bed net and public clinic. The resulting plots below show that the slopes of $Y~PHC$ are quite different for different $BEDNET$ variable values. 
+```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
+library(effects)
+model = glm(Y~BEDNET+AGE+PHC+GREEN+BEDNET:PHC, data = completedData)
+plot(allEffects(model))
+```
+
+## Model Selection
+
+We then start off the model selection process by first construct a naive model with intercept only. We then compare our full model, $Y=\alpha_1BEDNET+\alpha_2AGE+\alpha_3PHC+\alpha_4GREEN+\alpha_5$, with this naive model using the likelihood ratio test. From the p-value, we can observe that the full model is not significant compared to the naive model. We also use similar technique to compare a model with an extra interaction variable but we found that it is not statistically significant as well. This appears to be different from what we expected, and we are planning to use cross-validation technique to further verify this finding. For now, we choose to use the model with all variables and an additional interaction term as our best model, that is, $Y=\alpha_1BEDNET+\alpha_2AGE+\alpha_3PHC+\alpha_4GREEN+\alpha_5BEDNET*PHC+\alpha_6$. 
+
+```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
 #AIC or BIC or another model fit diagnostic
 modelBase <- with(tempData2,glm(Y~1))
 modelFit3 <- with(tempData2,glm(Y~BEDNET+AGE+PHC+GREEN+BEDNET:PHC))
 summary(pool(modelFit3))
-pool.compare(modelFit3, modelBase, data = tempData2, method = "likelihood")$pvalue
+pool.compare(modelFit2, modelBase, data = tempData2, method = "likelihood")$pvalue
 # weird that the fitted model is not significant compared to a model with only intercept....
 pool.compare(modelFit3, modelFit2, data = tempData2, method = "likelihood")$pvalue
 ```
 
 residual v fitted and corresponding write up, model selection and the pool.compare p-value, explanation of estimates and thier implication on the study
+
+# Model Interpretation
 
 #Future Revisions
 
