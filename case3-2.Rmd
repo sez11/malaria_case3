@@ -85,7 +85,7 @@ residual v fitted and corresponding write up, model selection and the pool.compa
 
 #Future Revisions
 
-variable selection and cross validation
+variable selection and cross validation and testing for interaction terms
 
 
 #Credits 
