@@ -13,12 +13,17 @@ library(devtools)
 library(mice)
 library(lattice)
 gambia= read.csv("gambiaMissing.csv") 
+#gambia$log.green = log(gambia$GREEN)
+# may need log transformation for GREEN
 dim(gambia)
 ```
 
 #Multiple Imputation/Chained Regression
 ```{r}
 tempData <- mice(gambia, m=5,maxit=50,meth='pmm',seed=500)
+#gambia$BEDNET = as.factor(gambia$BEDNET)
+#tempData <- mice(gambia, m=5,maxit=50,meth='logreg',seed=500)
+# should probably use logreg since the variable is binary?
 summary(tempData)
 #where m is the number of imputed data sets, pmm is the method(in this case predictive mean matching)
 
@@ -54,7 +59,7 @@ tempData2 <- mice(gambia,m=50,seed=245435)
 
 densityplot(tempData2)
 
-modelFit2 <- with(tempData2,lm(Y~BEDNET+AGE+PHC+GREEN))
+modelFit2 <- with(tempData2,glm(Y~BEDNET+AGE+PHC+GREEN))
 summary(pool(modelFit2))
 #50 imputed data sets instead of 5 to pool together and fit a model
 ```
@@ -72,6 +77,12 @@ The summary of our model fit with 50 imputed data sets indicates that the variab
 
 
 #AIC or BIC or another model fit diagnostic
+modelBase <- with(tempData2,glm(Y~1))
+modelFit3 <- with(tempData2,glm(Y~BEDNET+AGE+PHC+GREEN+BEDNET:PHC))
+summary(pool(modelFit3))
+pool.compare(modelFit2, modelBase, data = tempData2, method = "likelihood")$pvalue
+# weird that the fitted model is not significant compared to a model with only intercept....
+pool.compare(modelFit3, modelFit2, data = tempData2, method = "likelihood")$pvalue
 ```
 
 
