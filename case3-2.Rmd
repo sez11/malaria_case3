@@ -5,7 +5,6 @@ date: "November 9, 2017"
 output: pdf_document
 ---
 
-
 #Data
 ```{r}
 
@@ -19,25 +18,63 @@ dim(gambia)
 
 #Multiple Imputation/Chained Regression
 ```{r}
-
 tempData <- mice(gambia, m=5,maxit=50,meth='pmm',seed=500)
 summary(tempData)
+#where m is the number of imputed data sets, pmm is the method(in this case predictive mean matching)
 
 completedData <- complete(tempData,1)
+#this function returns the imputed data set, with the second parameter in the function determining which data set you are returning(the 1st of the 5 imputed data sets in this case)
+```
+The multiple imputation method using chained regression was utilized to impute missing data for the bednet variable in the *gambia* data set. The $mice$ package provides several functions for easy implementation of multiple imputation. Functions **mice()**, **complete()**, and **with()** allow us to apply multiple imputation for missing data, replace missing data with imputed data, and use the imputed data set to create a model, respectively. 
 
-xyplot(tempData,Y ~ BEDNET+ AGE+ PHC+ GREEN,pch=18,cex=1)
-
-densityplot(tempData)
+##Inspection of Missing Data
+```{r}
+xyplot(tempData,Y ~ BEDNET + AGE+ PHC+ GREEN,pch=18,cex=1)
+#unfortunately provides little information when comparing imputed to observed
 
 stripplot(tempData, pch=20, cex=1.2)
+#would be a useful plot for largely continuous data without so many binary or ordinal variables (both Y, PHC and Bednet are binary, and Age and Green only have 4 unique values each)
 
+densityplot(tempData)
+#the densities for each imputed data set follow a similar shape to the observed density curve
+```
+
+In order to ensure the multiple imputation process functioned as expected, we analyze the distributions of the imputed data sets versus the originally observed data. The scatterplot of malaria presence vs. each of the predictor variables fails to provide any insight, and in cases where fewer variables are binary or few in unique value, it might be more useful. The strip plot also yields very little with respect to the relationship between imputed and observed data, but does illustrate that the *bednet* variable is the only variable with missing data (previously known). The density plot provides us with the most meaningful information regarding the imputed data sets and the observed data.
+
+In our density plot, the 5 magenta density curves represent the 5 imputed data sets, while the blue density curve represents the density of observed data. In determining whether the imputed data for missing values in the bednet variable are plausible, we want to determine if the imputed data density curves follow a similar curvature to the observed data density curve. As illustrated, the 5 magenta curves follow a similar shape to the observed data curve. It is of note to mention that all 5 imputed data sets densities fall below the density of the observed data for the number of individuals without a bednet. 2 imputed data sets fall below the observed density for individuals with a bednet, 2 above the observed density, and 1 with a density of individuals with a bednet very close to the observed. It appears that each of the 5 imputed data sets seems plausible and have similar shape to the blue observed curve.
+
+
+#Model
+```{r}
 modelFit1 <- with(tempData,glm(Y~ BEDNET+AGE+PHC+GREEN))
 summary(pool(modelFit1))
+#takes the imputed data sets, fits a model to each data set, and pools together results
 
 tempData2 <- mice(gambia,m=50,seed=245435)
+
+densityplot(tempData2)
+
 modelFit2 <- with(tempData2,lm(Y~BEDNET+AGE+PHC+GREEN))
 summary(pool(modelFit2))
+#50 imputed data sets instead of 5 to pool together and fit a model
 ```
+To alleviate dependance created by our choice in the **mice()** function seed selection, we use the multiple imputation method to create 50 imputed data sets. The density plot for these 50 data sets follow very similar shape to the observed density curve, and so we proceed with model fitting. 
+
+The summary of our model fit with 50 imputed data sets indicates that the variables *age* and *PHC* (presence of a health clinic in the village) are statistically significant with p-values under 0.01. Bednet use was not statistically significant, with a p-value over 0.1. This provides insight into the effects of bednet use on malaria presence in the individual, and indicates that bednet use is not as impactful on predicting cases of malaria as previously thought. Under the current model, age and presence of a health clinic in the area are the strongest variables in predicting malaria cases. 
+
+
+
+
+#Model Diagnostics
+```{r}
+#plot(modelFit2)
+#residuals v fitted plot if applicable, don't know how to plot resid v fit for 50 different data sets 
+
+
+#AIC or BIC or another model fit diagnostic
+```
+
+
 
 #Credits 
 
