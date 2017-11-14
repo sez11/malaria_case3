@@ -5,7 +5,13 @@ date: "November 9, 2017"
 output: pdf_document
 ---
 
-#Data
+#Introduction 
+
+The data are from a study malaria presence in Gambia. Each observation corresponds to one child who has been tested for the presence of malaria. We are interested in the factors predictive of the malaria parasits found in the blood for n=805 children. The goal of the analysis is to perform inferences on the impact of age, presence of bednet, presence of clinic, and amount of surrounding greenry on a child having malaria, where greenery is a measure of how much vegetation is around the child's village based on satellite village.
+
+This week the team focused on imputation strategies and prelimnary model creation and diagnostic. Specifically we explore multiply imputation and they fit and diagnosed general linear models with the imputed data sets. 
+
+
 ```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
 library(ggplot2)
 library(devtools)
@@ -23,7 +29,9 @@ summary(tempData)
 completedData <- complete(tempData,1)
 #this function returns the imputed data set, with the second parameter in the function determining which data set you are returning(the 1st of the 5 imputed data sets in this case)
 ```
-The multiple imputation method using chained regression was utilized to impute missing data for the bednet variable in the *gambia* data set. The $mice$ package provides several functions for easy implementation of multiple imputation. Functions **mice()**, **complete()**, and **with()** allow us to apply multiple imputation for missing data, replace missing data with imputed data, and use the imputed data set to create a model, respectively. 
+As an over view, the multiple imputation method using chained regression was utilized to impute missing data for the bednet variable in the *gambia* data set. The $mice$ package provides several functions for easy implementation of multiple imputation. Functions **mice()**, **complete()**, and **with()** allow us to apply multiple imputation for missing data, replace missing data with imputed data, and use the imputed data set to create a model, respectively. 
+
+We iterated 50 times and with this new data set we must inspect if the imputation functioned as expected. 
 
 ##Inspection of Missing Data
 ```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
@@ -37,9 +45,11 @@ densityplot(tempData, ~BEDNET)
 #the densities for each imputed data set follow a similar shape to the observed density curve
 ```
 
-In order to ensure the multiple imputation process functioned as expected, we analyze the distributions of the imputed data sets versus the originally observed data. The scatterplot of malaria presence vs. each of the predictor variables fails to provide any insight, and in cases where fewer variables are binary or few in unique value, it might be more useful. The strip plot also yields very little with respect to the relationship between imputed and observed data, but does illustrate that the *bednet* variable is the only variable with missing data (previously known). The density plot provides us with the most meaningful information regarding the imputed data sets and the observed data.
+We analyze the distributions of the imputed data sets versus the originally observed data. The scatterplot of malaria presence vs. each of the predictor variables fails to provide any insight, and in cases where fewer variables are binary or few in unique value, it might be more useful. The strip plot also yields very little with respect to the relationship between imputed and observed data, but does illustrate that the *bednet* variable is the only variable with missing data (previously known). The density plot provides us with the most meaningful information regarding the imputed data sets and the observed data.
 
 In our density plot, the 5 magenta density curves represent the 5 imputed data sets, while the blue density curve represents the density of observed data. In determining whether the imputed data for missing values in the bednet variable are plausible, we want to determine if the imputed data density curves follow a similar curvature to the observed data density curve. As illustrated, the 5 magenta curves follow a similar shape to the observed data curve. It is of note to mention that all 5 imputed data sets densities fall below the density of the observed data for the number of individuals without a bednet. 2 imputed data sets fall below the observed density for individuals with a bednet, 2 above the observed density, and 1 with a density of individuals with a bednet very close to the observed. It appears that each of the 5 imputed data sets seems plausible and have similar shape to the blue observed curve. 
+
+We continue on my modeling the imputed data. 
 
 
 #Model
@@ -91,6 +101,7 @@ We then start off the model selection process by first constructing a naive mode
 
 #Model Residuals and AIC
 ```{r}
+par(mfrow=c(2,2))
 plot(model)
 
 #stepAIC starting with the intercept only model
