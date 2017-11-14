@@ -17,7 +17,7 @@ gambia= read.csv("gambiaMissing.csv")
 #Multiple Imputation/Chained Regression
 ```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
 gambia$BEDNET = as.factor(gambia$BEDNET)
-tempData <- mice(gambia, m=5,maxit=50,meth='logreg',seed=500)
+tempData <- mice(gambia, m=5,maxit=50,meth='logreg', seed=500)
 summary(tempData)
 completedData <- complete(tempData,1)
 #this function returns the imputed data set, with the second parameter in the function determining which data set you are returning(the 1st of the 5 imputed data sets in this case)
@@ -32,7 +32,7 @@ xyplot(tempData,Y ~ BEDNET + AGE+ PHC+ GREEN,pch=18,cex=1)
 stripplot(tempData, pch=20, cex=1.2)
 #would be a useful plot for largely continuous data without so many binary or ordinal variables (both Y, PHC and Bednet are binary, and Age and Green only have 4 unique values each)
 
-#densityplot(tempData)
+densityplot(tempData, ~BEDNET)
 #the densities for each imputed data set follow a similar shape to the observed density curve
 ```
 
@@ -49,7 +49,7 @@ summary(pool(modelFit1))
 
 tempData2 <- mice(gambia,m=50,seed=245435)
 
-#densityplot(tempData2)
+densityplot(tempData2, ~BEDNET)
 
 modelFit2 <- with(tempData2,glm(Y~BEDNET+AGE+PHC+GREEN))
 summary(pool(modelFit2))
