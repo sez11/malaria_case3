@@ -11,6 +11,7 @@ library(ggplot2)
 library(devtools)
 library(mice)
 library(lattice)
+library(MASS)
 gambia= read.csv("gambiaMissing.csv") 
 ```
 
@@ -60,44 +61,57 @@ To alleviate dependance created by our choice in the **mice()** function seed se
 The summary of our model fit with 50 imputed data sets indicates that the variables *age* and *PHC* (presence of a health clinic in the village) are statistically significant with p-values under 0.01. Bednet use was not statistically significant, with a p-value over 0.1. This provides insight into the effects of bednet use on malaria presence in the individual, and indicates that bednet use is not as impactful on predicting cases of malaria as previously thought. Under the current model, age and presence of a health clinic in the area are the strongest variables in predicting malaria cases. 
 
 
-#Model Diagnostics
+#Model Diagnostics and Selection
 
 ## Interaction Analysis
 
-Since Malaria is a mosquito-borne disease, we suspect that the presence of bed net would be an influential factor. Some other factor, such as the presence of a public clinic, could potentially have some interaction with the bed net variable. In other words, the effect of having a public clinic to malaria appearance could possibly vary with whether a bed net is used. We picked one of the imputed datasets and fit a logistic regression model with an interaction term between the bed net and public clinic. The resulting plots below show that the slopes of $Y~PHC$ are quite different for different $BEDNET$ variable values. 
+Since Malaria is a mosquito-borne disease, we suspect that the presence of bed net would be an influential factor. Some other factor, such as the presence of a public clinic, could potentially have some interaction with the bed net variable. In other words, the effect of having a public clinic to malaria appearance could possibly vary with whether a bed net is used. We picked one of the imputed datasets and fit a logistic regression model with an interaction term between the bed net and public clinic. The resulting plots below show that the slopes of $Y~PHC$ are quite different for different $BEDNET$ variable values.
+
 ```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
 library(effects)
 model = glm(Y~BEDNET+AGE+PHC+GREEN+BEDNET:PHC, data = completedData)
+#this is our most current and up to date model
 plot(allEffects(model))
 ```
 
 ## Model Selection
-
-We then start off the model selection process by first constructing a naive model with intercept only. We then compare our full model, $Y=\alpha_1BEDNET+\alpha_2AGE+\alpha_3PHC+\alpha_4GREEN+\alpha_5$ with this naive model using a likelihood ratio test. From the p-value, we can observe that the full model is not significant compared to the naive model. We also use a similar technique to compare a model with an extra interaction variable but we found that it is not statistically significant as well. This appears to be different from what we expected, and we are planning to use cross-validation to further verify this finding. For now, we choose to use the model with all variables and an additional interaction term as our best model, that is, $Y=\alpha_1BEDNET+\alpha_2AGE+\alpha_3PHC+\alpha_4GREEN+\alpha_5BEDNET*PHC+\alpha_6$. 
-
 ```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
-#AIC or BIC or another model fit diagnostic
 modelBase <- with(tempData2,glm(Y~1))
+
 modelFit3 <- with(tempData2,glm(Y~BEDNET+AGE+PHC+GREEN+BEDNET:PHC))
 summary(pool(modelFit3))
+
 pool.compare(modelFit2, modelBase, data = tempData2, method = "likelihood")$pvalue
 # weird that the fitted model is not significant compared to a model with only intercept....
 pool.compare(modelFit3, modelFit2, data = tempData2, method = "likelihood")$pvalue
 ```
 
-residual v fitted and corresponding write up, model selection and the pool.compare p-value, explanation of estimates and thier implication on the study
+We then start off the model selection process by first constructing a naive model with intercept only. We then compare our full model, $Y=\alpha_1BEDNET+\alpha_2AGE+\alpha_3PHC+\alpha_4GREEN+\alpha_5$ with this naive model using a likelihood ratio test. From the p-value above, we can observe that the full model is not significant compared to the naive model. We also use a similar technique to compare a model with an extra interaction variable but we found that it is not statistically significant as well. This appears to be different from what we expected, and we are planning to use cross-validation to further verify this finding. For now, we choose to use the model with all variables and an additional interaction term as our most current model, that is, $Y=\alpha_1BEDNET+\alpha_2AGE+\alpha_3PHC+\alpha_4GREEN+\alpha_5BEDNET*PHC+\alpha_6$. 
+
+
+#Model Residuals and AIC
+```{r}
+plot(model)
+
+#stepAIC starting with the intercept only model
+stepAIC(glm(Y~1, data = completedData), scope = ~ BEDNET + AGE + PHC + GREEN + BEDNET:PHC)
+```
+The residuals vs. fitted plot illustrates a dichotomous trend amongst residuals, with two separate, decreasing lines of residuals on both sides of the horizontal zero line. In evaluating the residuals for a logistic regression model, this is not surprising. If the observed value is 0, we will have negative residuals because we will predict higher than 0, and vice versa for observed values at 1. 
+
+The **stepAIC()** function allows us to evaluate our model using stepwise variable selection, with AIC as our criterion. The function's output, run over our current model, determined that the model with the lowest AIC is: $Y=\alpha_1AGE+\alpha_2PHC$. In future revisions, we will evaluate the consequences of using AIC as the primary variable selection criterion, as well as the consequences of variable selection processes in the context of this study. 
 
 # Model Interpretation
 
 #Future Revisions
 
-variable selection and cross validation and testing for interaction terms
-
+In future revisions of this analysis, we look to examine the effects of choosing AIC as the primary variable selection criterion, as well as the effect of using a stepwise variable selection technique has on our analysis in this setting. We aim to utilize other techniques for model validation, i.e. cross validation, to further solidify our model selection. Other interaction terms will be considered and tested to determine their contributions or lack thereof to our current model. 
 
 #Credits 
 
-
+This was a team effort. Adam contributed most heavily to the write up, model diagnostics (residuals and AIC), and evaluation of our model with imputed data using plots. 
 
 #References 
 
 https://www.r-bloggers.com/imputing-missing-data-with-r-mice-package/
+
+http://freakonometrics.hypotheses.org/8210
