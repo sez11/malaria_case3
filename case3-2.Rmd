@@ -7,7 +7,7 @@ output: pdf_document
 
 #Introduction 
 
-The data are from a study malaria presence in Gambia. Each observation corresponds to one child who has been tested for the presence of malaria. We are interested in the factors predictive of the malaria parasits found in the blood for n=805 children. The goal of the analysis is to perform inferences on the impact of age, presence of bednet, presence of clinic, and amount of surrounding greenry on a child having malaria, where greenery is a measure of how much vegetation is around the child's village based on satellite village.
+The data are from a study malaria presence in Gambia. Each observation corresponds to one child who has been tested for the presence of malaria. We are interested in the factors predictive of the malaria parasits found in the blood for n=805 children. The goal of the analysis is to perform inferences on the impact of age, presence of bednet, presence of clinic, and amount of surrounding greenery on a child having malaria, where greenery is a measure of how much vegetation is around the child's village based on satellite images. 
 
 This week the team focused on imputation strategies and prelimnary model creation and diagnostic. We explored multiply imputation and fit general linear models with the imputed data sets. Our diagnoses and interpretations are found below. 
 
@@ -29,12 +29,13 @@ summary(tempData)
 completedData <- complete(tempData,1)
 #this function returns the imputed data set, with the second parameter in the function determining which data set you are returning(the 1st of the 5 imputed data sets in this case)
 ```
-As an over view, the multiple imputation method using chained regression was utilized to impute missing data for the bednet variable in the *gambia* data set. The $mice$ package provides several functions for easy implementation of multiple imputation. Functions **mice()**, **complete()**, and **with()** allow us to apply multiple imputation for missing data, replace missing data with imputed data, and use the imputed data set to create a model, respectively. 
+As an overview for our work, the multiple imputation method using chained regression was utilized to impute missing data for the bednet variable in the *gambia* data set. The $mice$ package provides several functions for easy implementation of multiple imputation. Functions **mice()**, **complete()**, and **with()** allow us to apply multiple imputation for missing data, replace missing data with imputed data, and use the imputed data set to create a model, respectively. 
 
-We iterated 50 times and with this new data set we must inspect if the imputation functioned as expected. 
+We imputed the data 5 times and iterated 50. With this new data set we must inspect if the imputation functioned as expected. 
 
 ##Inspection of Missing Data
 ```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
+
 xyplot(tempData,Y ~ BEDNET + AGE+ PHC+ GREEN,pch=18,cex=1)
 #unfortunately provides little information when comparing imputed to observed
 
@@ -125,7 +126,7 @@ In future revisions of this analysis, we look to examine the effects of choosing
 
 #Credits 
 
-This was a team effort. Adam contributed most heavily to the write up, model diagnostics (residuals and AIC), and evaluation of our model with imputed data using plots. 
+This was a team effort. Adam contributed most heavily to the write up, model diagnostics (residuals and AIC), and evaluation of our model with imputed data using plots. Sarah wrote the code for the imputation, imputation diagnostics, and model as well as interpreting the final model after model selection. 
 
 #References 
 
