@@ -32,7 +32,7 @@ xyplot(tempData,Y ~ BEDNET + AGE+ PHC+ GREEN,pch=18,cex=1)
 stripplot(tempData, pch=20, cex=1.2)
 #would be a useful plot for largely continuous data without so many binary or ordinal variables (both Y, PHC and Bednet are binary, and Age and Green only have 4 unique values each)
 
-densityplot(tempData)
+#densityplot(tempData)
 #the densities for each imputed data set follow a similar shape to the observed density curve
 ```
 
