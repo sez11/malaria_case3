@@ -116,9 +116,9 @@ The **stepAIC()** function allows us to evaluate our model using stepwise variab
 
 The model after selection gives insight into the effect of age and presence of clinics on malaria. According to the model, all else held constant an increase in age will increase the log odds of malaria by .054. All else held constant the presence of the clinic in a village decreases the log odds of malaria by .096. 
 
-The output overall made sense to the team. According to the World Health Organization children under 5 in high-transmission areas of the world are the most vulnerable group. In 2015, over 69% of malaria deaths worldwide occurred in children under five years of age. The model indicating age is significant in malaria in child makes sense as it is backed by WHO and other health organizations. Additionally, the presences of clinics decreasing the log odds of malaria is logical because with the presence of medical personnel villages in the surrounding area have access to treatment and education for example which would logically help in prevention and care. 
+The output overall made sense to the team. According to the World Health Organization children under 5 in high-transmission areas of the world are the most vulnerable group. In 2015, over 69% of malaria deaths worldwide occurred in children under five years of age (http://www.who.int/malaria/areas/high_risk_groups/en/). The model indicating age is significant in malaria in child makes sense as it is backed by WHO and other health organizations. Additionally, the presences of clinics decreasing the log odds of malaria is logical because with the presence of medical personnel villages in the surrounding area have access to treatment and education for example which would logically help in prevention and care. 
 
-Also a fair model we will continue to make improvements for future models. 
+Although a fair model we will continue to make improvements for future models. 
 
 #Future Revisions
 
