@@ -9,7 +9,7 @@ output: pdf_document
 
 The data are from a study malaria presence in Gambia. Each observation corresponds to one child who has been tested for the presence of malaria. We are interested in the factors predictive of the malaria parasits found in the blood for n=805 children. The goal of the analysis is to perform inferences on the impact of age, presence of bednet, presence of clinic, and amount of surrounding greenry on a child having malaria, where greenery is a measure of how much vegetation is around the child's village based on satellite village.
 
-This week the team focused on imputation strategies and prelimnary model creation and diagnostic. Specifically we explore multiply imputation and they fit and diagnosed general linear models with the imputed data sets. 
+This week the team focused on imputation strategies and prelimnary model creation and diagnostic. We explored multiply imputation and fit general linear models with the imputed data sets. Our diagnoses and interpretations are found below. 
 
 
 ```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
@@ -112,6 +112,12 @@ The residuals vs. fitted plot illustrates a dichotomous trend amongst residuals,
 The **stepAIC()** function allows us to evaluate our model using stepwise variable selection, with AIC as our criterion. The function's output, run over our current model, determined that the model with the lowest AIC is: $Y=\alpha_1AGE+\alpha_2PHC$. In future revisions, we will evaluate the consequences of using AIC as the primary variable selection criterion, as well as the consequences of variable selection processes in the context of this study. 
 
 # Model Interpretation
+
+The model after selection gives insight into the effect of age and presence of clinics on malaria. According to the model, all else held constant an increase in age will increase the log odds of malaria by .054. All else held constant the presence of the clinic in a village decreases the log odds of malaria by .096. 
+
+The output overall made sense to the team. According to the World Health Organization children under 5 in high-transmission areas of the world are the most vulnerable group. In 2015, over 69% of malaria deaths worldwide occurred in children under five years of age. The model indicating age is significant in malaria in child makes sense as it is backed by WHO and other health organizations. Additionally, the presences of clinics decreasing the log odds of malaria is logical because with the presence of medical personnel villages in the surrounding area have access to treatment and education for example which would logically help in prevention and care. 
+
+Also a fair model we will continue to make improvements for future models. 
 
 #Future Revisions
 
