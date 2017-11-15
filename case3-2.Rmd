@@ -7,9 +7,9 @@ output: pdf_document
 
 #Introduction 
 
-The data are from a study malaria presence in Gambia. Each observation corresponds to one child who has been tested for the presence of malaria. We are interested in the factors predictive of the malaria parasits found in the blood for n=805 children. The goal of the analysis is to perform inferences on the impact of age, presence of bednet, presence of clinic, and amount of surrounding greenery on a child having malaria, where greenery is a measure of how much vegetation is around the child's village based on satellite images. 
+The data are from a study malaria presence in Gambia. Each observation corresponds to one child who has been tested for the presence of malaria. We are interested in the factors predictive of the malaria parasites found in the blood for n=805 children. The goal of the analysis is to perform inferences on the impact of age, presence of bednet, presence of clinic, and amount of surrounding greenery on a child having malaria, where greenery is a measure of how much vegetation is around the child's village based on satellite images. 
 
-This week the team focused on imputation strategies and prelimnary model creation and diagnostic. We explored multiply imputation and fit general linear models with the imputed data sets. Our diagnoses and interpretations are found below. 
+This week the team focused on imputation strategies and preliminary model creation and diagnostic. We explored multiply imputation and fit general linear models with the imputed data sets. Our diagnoses and interpretations are found below. 
 
 
 ```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
@@ -29,11 +29,17 @@ summary(tempData)
 completedData <- complete(tempData,1)
 #this function returns the imputed data set, with the second parameter in the function determining which data set you are returning(the 1st of the 5 imputed data sets in this case)
 ```
-As an overview for our work, the multiple imputation method using chained regression was utilized to impute missing data for the bednet variable in the *gambia* data set. The $mice$ package provides several functions for easy implementation of multiple imputation. Functions **mice()**, **complete()**, and **with()** allow us to apply multiple imputation for missing data, replace missing data with imputed data, and use the imputed data set to create a model, respectively. 
+As an overview for our work, we used the multiple imputation method and chained regression to impute missing data for the bednet variable in the *gambia* data set. The $mice$ package provides several functions for easy implementation of multiple imputation. Functions **mice()**, **complete()**, and **with()** allow us to apply multiple imputation for missing data, replace missing data with imputed data, and use the imputed data set to create a model, respectively. 
 
 We imputed the data 5 times and iterated 50. With this new data set we must inspect if the imputation functioned as expected. 
 
 ##Inspection of Missing Data
+
+We analyze the distributions of the imputed data sets versus the originally observed data. The scatterplot of malaria presence vs. each of the predictor variables fails to provide any insight, and in cases where fewer variables are binary or few in unique value, it might be more useful. The strip plot also yields very little with respect to the relationship between imputed and observed data, but does illustrate that the *bednet* variable is the only variable with missing data (previously known). The density plot provides us with the most meaningful information regarding the imputed data sets and the observed data.
+
+In our density plot, the 5 magenta density curves represent the 5 imputed data sets, while the blue density curve represents the density of observed data. In determining whether the imputed data for missing values in the bednet variable are plausible, we want to determine if the imputed data density curves follow a similar curvature to the observed data density curve. As illustrated, the 5 magenta curves follow a similar shape to the observed data curve. It is of note to mention that all 5 imputed data sets densities fall below the density of the observed data for the number of individuals without a bednet. 2 imputed data sets fall below the observed density for individuals with a bednet, 2 above the observed density, and 1 with a density of individuals with a bednet very close to the observed. It appears that each of the 5 imputed data sets seems plausible and have similar shape to the blue observed curve. 
+
+
 ```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
 
 xyplot(tempData,Y ~ BEDNET + AGE+ PHC+ GREEN,pch=18,cex=1)
@@ -46,14 +52,13 @@ densityplot(tempData, ~BEDNET)
 #the densities for each imputed data set follow a similar shape to the observed density curve
 ```
 
-We analyze the distributions of the imputed data sets versus the originally observed data. The scatterplot of malaria presence vs. each of the predictor variables fails to provide any insight, and in cases where fewer variables are binary or few in unique value, it might be more useful. The strip plot also yields very little with respect to the relationship between imputed and observed data, but does illustrate that the *bednet* variable is the only variable with missing data (previously known). The density plot provides us with the most meaningful information regarding the imputed data sets and the observed data.
-
-In our density plot, the 5 magenta density curves represent the 5 imputed data sets, while the blue density curve represents the density of observed data. In determining whether the imputed data for missing values in the bednet variable are plausible, we want to determine if the imputed data density curves follow a similar curvature to the observed data density curve. As illustrated, the 5 magenta curves follow a similar shape to the observed data curve. It is of note to mention that all 5 imputed data sets densities fall below the density of the observed data for the number of individuals without a bednet. 2 imputed data sets fall below the observed density for individuals with a bednet, 2 above the observed density, and 1 with a density of individuals with a bednet very close to the observed. It appears that each of the 5 imputed data sets seems plausible and have similar shape to the blue observed curve. 
-
-We continue on my modeling the imputed data. 
-
+We continue with modeling the imputed data.
 
 #Model
+
+To alleviate dependance created by our choice in the **mice()** function seed selection, we use the multiple imputation method to create 50 imputed data sets. The density plot for these 50 data sets follow very similar shape to the observed density curve, and so we proceed with model fitting. 
+
+The summary of our model fit with 50 imputed data sets indicates that the variables *age* and *PHC* (presence of a health clinic in the village) are statistically significant with p-values under 0.01. Bednet use was not statistically significant, with a p-value over 0.1. This provides insight into the effects of bednet use on malaria presence in the individual, and indicates that bednet use is not as impactful on predicting cases of malaria as previously thought. Under the current model, age and presence of a health clinic in the area are the strongest variables in predicting malaria cases.
 ```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
 modelFit1 <- with(tempData,glm(Y~ BEDNET+AGE+PHC+GREEN))
 summary(pool(modelFit1))
@@ -67,10 +72,7 @@ modelFit2 <- with(tempData2,glm(Y~BEDNET+AGE+PHC+GREEN))
 summary(pool(modelFit2))
 #50 imputed data sets instead of 5 to pool together and fit a model
 ```
-To alleviate dependance created by our choice in the **mice()** function seed selection, we use the multiple imputation method to create 50 imputed data sets. The density plot for these 50 data sets follow very similar shape to the observed density curve, and so we proceed with model fitting. 
-
-The summary of our model fit with 50 imputed data sets indicates that the variables *age* and *PHC* (presence of a health clinic in the village) are statistically significant with p-values under 0.01. Bednet use was not statistically significant, with a p-value over 0.1. This provides insight into the effects of bednet use on malaria presence in the individual, and indicates that bednet use is not as impactful on predicting cases of malaria as previously thought. Under the current model, age and presence of a health clinic in the area are the strongest variables in predicting malaria cases. 
-
+ 
 
 #Model Diagnostics and Selection
 
@@ -86,6 +88,9 @@ plot(allEffects(model))
 ```
 
 ## Model Selection
+
+We then start off the model selection process by first constructing a naive model with intercept only. We then compare our full model, $Y=\alpha_1BEDNET+\alpha_2AGE+\alpha_3PHC+\alpha_4GREEN+\alpha_5$ with this naive model using a likelihood ratio test. From the p-value above, we can observe that the full model is not significant compared to the naive model. We also use a similar technique to compare a model with an extra interaction variable but we found that it is not statistically significant as well. This appears to be different from what we expected, and we are planning to use cross-validation to further verify this finding. For now, we choose to use the model with all variables and an additional interaction term as our most current model, that is, $Y=\alpha_1BEDNET+\alpha_2AGE+\alpha_3PHC+\alpha_4GREEN+\alpha_5BEDNET*PHC+\alpha_6$.
+
 ```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
 modelBase <- with(tempData2,glm(Y~1))
 
@@ -97,10 +102,14 @@ pool.compare(modelFit2, modelBase, data = tempData2, method = "likelihood")$pval
 pool.compare(modelFit3, modelFit2, data = tempData2, method = "likelihood")$pvalue
 ```
 
-We then start off the model selection process by first constructing a naive model with intercept only. We then compare our full model, $Y=\alpha_1BEDNET+\alpha_2AGE+\alpha_3PHC+\alpha_4GREEN+\alpha_5$ with this naive model using a likelihood ratio test. From the p-value above, we can observe that the full model is not significant compared to the naive model. We also use a similar technique to compare a model with an extra interaction variable but we found that it is not statistically significant as well. This appears to be different from what we expected, and we are planning to use cross-validation to further verify this finding. For now, we choose to use the model with all variables and an additional interaction term as our most current model, that is, $Y=\alpha_1BEDNET+\alpha_2AGE+\alpha_3PHC+\alpha_4GREEN+\alpha_5BEDNET*PHC+\alpha_6$. 
+
 
 
 #Model Residuals and AIC
+
+The residuals vs. fitted plot illustrates a dichotomous trend amongst residuals, with two separate, decreasing lines of residuals on both sides of the horizontal zero line. In evaluating the residuals for a logistic regression model, this is not surprising. If the observed value is 0, we will have negative residuals because we will predict higher than 0, and vice versa for observed values at 1. 
+
+The **stepAIC()** function allows us to evaluate our model using stepwise variable selection, with AIC as our criterion. The function's output, run over our current model, determined that the model with the lowest AIC is: $Y=\alpha_1AGE+\alpha_2PHC$. In future revisions, we will evaluate the consequences of using AIC as the primary variable selection criterion, as well as the consequences of variable selection processes in the context of this study. 
 ```{r}
 par(mfrow=c(2,2))
 plot(model)
@@ -108,9 +117,7 @@ plot(model)
 #stepAIC starting with the intercept only model
 stepAIC(glm(Y~1, data = completedData), scope = ~ BEDNET + AGE + PHC + GREEN + BEDNET:PHC)
 ```
-The residuals vs. fitted plot illustrates a dichotomous trend amongst residuals, with two separate, decreasing lines of residuals on both sides of the horizontal zero line. In evaluating the residuals for a logistic regression model, this is not surprising. If the observed value is 0, we will have negative residuals because we will predict higher than 0, and vice versa for observed values at 1. 
 
-The **stepAIC()** function allows us to evaluate our model using stepwise variable selection, with AIC as our criterion. The function's output, run over our current model, determined that the model with the lowest AIC is: $Y=\alpha_1AGE+\alpha_2PHC$. In future revisions, we will evaluate the consequences of using AIC as the primary variable selection criterion, as well as the consequences of variable selection processes in the context of this study. 
 
 # Model Interpretation
 
