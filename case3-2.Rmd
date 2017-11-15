@@ -133,7 +133,7 @@ In future revisions of this analysis, we look to examine the effects of choosing
 
 #Credits 
 
-This was a team effort. Adam contributed most heavily to the write up, model diagnostics (residuals and AIC), and evaluation of our model with imputed data using plots. Sarah wrote the code for the imputation, imputation diagnostics, and model as well as interpreting the final model after model selection. 
+This was a team effort. Adam contributed most heavily to the write up, model diagnostics (residuals and AIC), and evaluation of our model with imputed data using plots. Sarah wrote the code for the imputation, imputation diagnostics, and model as well as interpreting the final model after model selection. Wuming wrote the code for model diagnostic and model selection, as well as analyzing the interaction effects. 
 
 #References 
 
